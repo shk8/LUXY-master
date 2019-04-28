@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="yearlyReport" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4eedbb89-b4f6-4469-9ab6-f642a1688cf7">
+	<property name="template.engine" value="tabular_template"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<import value="org.joda.time.DateTime"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#EEEFF0"/>
+		</conditionalStyle>
+	</style>
+	<style name="Table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+			<topPen lineWidth="1.0" lineColor="#000000"/>
+			<leftPen lineWidth="1.0" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineColor="#000000"/>
+			<rightPen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="rentTotal" uuid="f25edef8-e0f5-4414-83f4-3fdf597fee01">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT SUM(a.monthly_rent) as "Total Rent Collected"
+	FROM unit_leasing_log a, payment_log b
+	WHERE YEAR(b.payment_date) = YEAR(CURDATE())]]>
+		</queryString>
+		<field name="Total Rent Collected" class="java.math.BigDecimal">
+			<property name="com.jaspersoft.studio.field.label" value="Total Rent Collected"/>
+		</field>
+	</subDataset>
+	<subDataset name="leaseStart" uuid="6c5766d5-fe5e-4b27-bf97-fa3cc2fd6e1d">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT a.unit_id, a.lease_start, a.lease_end
+FROM unit_leasing_log a
+WHERE YEAR(a.lease_start) = YEAR(CURDATE())
+ORDER BY a.lease_start;]]>
+		</queryString>
+		<field name="unit_id" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="unit_id"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+		</field>
+		<field name="lease_start" class="java.sql.Date">
+			<property name="com.jaspersoft.studio.field.label" value="lease_start"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+		</field>
+		<field name="lease_end" class="java.sql.Date">
+			<property name="com.jaspersoft.studio.field.label" value="lease_end"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+		</field>
+	</subDataset>
+	<subDataset name="leaseEnd" uuid="15b90a13-567d-4b83-93fd-bc96251f1549">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT a.unit_id, a.lease_start, a.lease_end
+FROM unit_leasing_log a
+WHERE YEAR(a.lease_end) = YEAR(CURDATE())
+ORDER BY a.lease_end;]]>
+		</queryString>
+		<field name="unit_id" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="unit_id"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+		</field>
+		<field name="lease_start" class="java.sql.Date">
+			<property name="com.jaspersoft.studio.field.label" value="lease_start"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+		</field>
+		<field name="lease_end" class="java.sql.Date">
+			<property name="com.jaspersoft.studio.field.label" value="lease_end"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+		</field>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT b.unit_id, b.lease_start, b.lease_end, b.monthly_rent, SUM(b.monthly_rent) as "Total Rent Collected"
+FROM unit_leasing_log b, payment_log a
+WHERE b.id = a.unit_leasing_log_id AND YEAR(a.payment_date) = YEAR(CURDATE())
+GROUP BY b.unit_id, b.lease_start, b.lease_end, b.monthly_rent]]>
+	</queryString>
+	<field name="unit_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="unit_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+	</field>
+	<field name="lease_start" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="lease_start"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+	</field>
+	<field name="lease_end" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="lease_end"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+	</field>
+	<field name="monthly_rent" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="monthly_rent"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+	</field>
+	<field name="Total Rent Collected" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="Total Rent Collected"/>
+	</field>
+	<title>
+		<band height="74">
+			<staticText>
+				<reportElement x="10" y="35" width="120" height="15" uuid="f8bc5aa6-c90a-4808-97ea-3da621807340"/>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Beginning: January]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="480" y="2" width="70" height="27" uuid="7bbf9c0e-6e66-4b63-8694-333773283f08">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="19" isBold="true"/>
+				</textElement>
+				<text><![CDATA[L U X Y]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="0" width="180" height="30" uuid="c11e7066-a342-4032-8355-6365b397663b"/>
+				<textElement>
+					<font size="24"/>
+				</textElement>
+				<text><![CDATA[Yearly Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="439" y="27" width="121" height="15" uuid="32563396-b063-4e9a-96eb-5efd3b14faeb">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Property Management]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="505" y="42" width="50" height="15" uuid="aba578dd-70c2-48c6-b045-6e467891e989">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Software]]></text>
+			</staticText>
+			<textField pattern="yyyy">
+				<reportElement x="130" y="35" width="110" height="15" uuid="5429c242-4f7a-489b-9ba9-5ee3562ed42b"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="70" width="556" height="1" forecolor="#336600" uuid="2d41651c-9775-46e1-8db8-6e749ecd9d4d">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="60">
+			<staticText>
+				<reportElement x="170" y="10" width="223" height="25" uuid="0eed6fea-1266-4acc-af0c-0d70af8397af"/>
+				<textElement textAlignment="Center">
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Rent Collected per Unit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="40" width="50" height="15" uuid="c7e1e4a7-06aa-4f06-a6f1-765e18d1e14b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2b8b137a-5bba-463d-89f1-74540212a21c"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isBold="false" isItalic="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Unit ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="90" y="40" width="80" height="15" uuid="c6005a34-6c26-4f3a-b29c-13ffef09b91e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="46c78328-ded0-4472-b99d-c39d4e1f3ded"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Lease Start]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="210" y="40" width="100" height="15" uuid="db5678fa-6d91-43d0-822d-8098eb1a0ff2">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Lease End]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="456" y="40" width="80" height="15" uuid="dd251008-3477-4a03-84d2-f73838c9a42c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="340" y="40" width="94" height="15" uuid="1c1ee6d9-c689-4cd8-88da-7df89bc61c64">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Monthly Rent]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Immediate">
+			<textField>
+				<reportElement x="10" y="0" width="60" height="15" uuid="aadf7ce2-513e-4c90-9215-423744ef9ccf">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="49a18d62-077e-4317-8551-05a2fa9f648a"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{unit_id}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yy">
+				<reportElement x="90" y="1" width="100" height="15" uuid="004c6776-c35c-4cda-b9ca-01e79d633051">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="07891f1c-e170-4ab4-a4b1-2f24ba96b47b"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{lease_start}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yy">
+				<reportElement x="210" y="0" width="100" height="15" uuid="fb49313e-387f-430e-8f9a-54072894d6e7">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9e028635-1fdf-4d37-9175-ac88032fb0de"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{lease_end}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="340" y="1" width="100" height="15" uuid="a0500a3a-961a-4c8f-9567-9e995ed6c2eb">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="60e7dd9c-6662-4f45-a265-f0526626106e"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{monthly_rent}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="458" y="0" width="92" height="15" uuid="b00c47ff-6a3f-441d-a428-df02a77649d7">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d7411b7c-616f-4876-b567-37fd60bc3ed1"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{Total Rent Collected}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="161" splitType="Immediate">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="136" width="554" height="20" backcolor="#E6E8E9" uuid="3fb99f67-e49e-4273-aee6-e4dfffcabe58"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[END OF REPORT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="459" y="0" width="80" height="15" uuid="68ebce33-71f1-4a38-ac1a-55d1f4a6c037">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2b8b137a-5bba-463d-89f1-74540212a21c"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isBold="false" isItalic="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Yearly Total]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="459" y="20" width="99" height="20" uuid="f4fc9aba-85aa-4fbb-b326-196e1a5d739d"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="rentTotal" uuid="deb3886c-449e-48f6-86e3-47100aff1151">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="20" width="99">
+						<textField>
+							<reportElement x="0" y="0" width="80" height="15" uuid="f9f4c9fb-e59a-4fab-8e2f-a9aecc8aa4b8"/>
+							<textFieldExpression><![CDATA[$F{Total Rent Collected}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement x="2" y="40" width="128" height="25" uuid="9dcd150e-25a1-45b3-8617-a477f4941eb8"/>
+				<textElement textAlignment="Left">
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Leases Started]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="40" width="120" height="25" uuid="405194f2-855d-404b-9441-859dddd6f740"/>
+				<textElement textAlignment="Left">
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Leases Ended]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="3" y="100" width="275" height="15" uuid="840cca9a-7c64-4322-b0d3-7f21f4967c61"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="leaseStart" uuid="7209e39d-3bc0-460c-91f8-0f2b44690b75">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="15" width="275">
+						<textField>
+							<reportElement x="0" y="0" width="50" height="15" uuid="aceba757-037c-4852-8037-be42e0e2b814"/>
+							<textFieldExpression><![CDATA[$F{unit_id}]]></textFieldExpression>
+						</textField>
+						<textField pattern="MM/dd/yy">
+							<reportElement x="80" y="0" width="100" height="15" uuid="26372178-b3a4-4ead-8c96-9a0bbdd32cef"/>
+							<textFieldExpression><![CDATA[$F{lease_start}]]></textFieldExpression>
+						</textField>
+						<textField pattern="MM/dd/yy">
+							<reportElement x="180" y="0" width="80" height="15" uuid="509d6b5f-2e00-4763-b5bf-4a7a515e2e38"/>
+							<textFieldExpression><![CDATA[$F{lease_end}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement x="3" y="70" width="50" height="15" uuid="7fd6fa80-506e-47db-bd00-3eda01bd0c05">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2b8b137a-5bba-463d-89f1-74540212a21c"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isBold="false" isItalic="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Unit ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="80" y="70" width="80" height="15" uuid="ae8a30b1-549d-49c6-b1dd-30762c232cdd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="46c78328-ded0-4472-b99d-c39d4e1f3ded"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Lease Start]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="180" y="70" width="100" height="15" uuid="7da0d60d-c67c-460f-a24f-e19523e9b946">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Lease End]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="280" y="100" width="275" height="15" uuid="3786b3d1-84b7-40b9-9165-f91656d19c9c"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="leaseEnd" uuid="54049aba-7773-47a7-88b9-c4ab0122f3d9">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="15" width="275">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="15" uuid="56e49365-61c1-4419-8ae0-dc225a8e5400"/>
+							<textFieldExpression><![CDATA[$F{unit_id}]]></textFieldExpression>
+						</textField>
+						<textField pattern="MM/dd/yy">
+							<reportElement x="80" y="0" width="80" height="15" uuid="dc36c1f2-75e8-40e7-99b3-6d38c76c4a03"/>
+							<textFieldExpression><![CDATA[$F{lease_start}]]></textFieldExpression>
+						</textField>
+						<textField pattern="MM/dd/yy">
+							<reportElement x="181" y="0" width="79" height="15" uuid="29d83649-4235-49ec-bc91-37c6efdda058"/>
+							<textFieldExpression><![CDATA[$F{lease_end}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement x="280" y="70" width="50" height="15" uuid="8ce1b477-116c-4531-9db4-25eae1a0073d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2b8b137a-5bba-463d-89f1-74540212a21c"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isBold="false" isItalic="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Unit ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="357" y="70" width="80" height="15" uuid="7bbd0c32-62b4-4923-b3cc-10d013601462">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="46c78328-ded0-4472-b99d-c39d4e1f3ded"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Lease Start]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="457" y="70" width="100" height="15" uuid="0205d168-4736-44b4-a105-5c5a096bc3e8">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Lease End]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

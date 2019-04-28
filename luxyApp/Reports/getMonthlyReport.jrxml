@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="monthlyReport" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4eedbb89-b4f6-4469-9ab6-f642a1688cf7">
+	<property name="template.engine" value="tabular_template"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<import value="org.joda.time.DateTime"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#EEEFF0"/>
+		</conditionalStyle>
+	</style>
+	<style name="Table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+			<topPen lineWidth="1.0" lineColor="#000000"/>
+			<leftPen lineWidth="1.0" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineColor="#000000"/>
+			<rightPen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="maintSubtotal" uuid="3bfcae29-a57a-461e-8af9-974bd1aeabb1">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<queryString>
+			<![CDATA[SELECT b.service_category, COUNT(*) as "Total"
+FROM service_request a, service_category b
+WHERE MONTH(a.closure_date) = MONTH(CURDATE()) AND YEAR(a.closure_date) = YEAR(CURDATE())
+GROUP BY b.service_category DESC]]>
+		</queryString>
+		<field name="service_category" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="service_category"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="service_category"/>
+		</field>
+		<field name="Total" class="java.lang.Long">
+			<property name="com.jaspersoft.studio.field.label" value="Total"/>
+		</field>
+	</subDataset>
+	<subDataset name="maintTotal" uuid="93beae43-b582-436e-b8d4-6451e50dd255">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT COUNT(b.service_category) as "Total"
+FROM service_request a, service_category b
+WHERE MONTH(a.closure_date) = MONTH(CURDATE()) AND YEAR(a.closure_date) = YEAR(CURDATE())]]>
+		</queryString>
+		<field name="Total" class="java.lang.Long">
+			<property name="com.jaspersoft.studio.field.label" value="Total"/>
+		</field>
+	</subDataset>
+	<subDataset name="rentSubtotal" uuid="415c012b-856a-470a-9dd4-39cf5d5d1509">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT a.payment_status, COUNT(*) as "Total"
+FROM payment_log a
+WHERE MONTH(a.payment_date) = MONTH(CURDATE()) AND YEAR(a.payment_date) = YEAR(CURDATE())
+GROUP BY a.payment_status DESC]]>
+		</queryString>
+		<field name="payment_status" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="payment_status"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="payment_log"/>
+		</field>
+		<field name="Total" class="java.lang.Long">
+			<property name="com.jaspersoft.studio.field.label" value="Total"/>
+		</field>
+		<group name="payment_status">
+			<groupExpression><![CDATA[$F{payment_status}]]></groupExpression>
+		</group>
+		<group name="Total">
+			<groupExpression><![CDATA[$F{Total}]]></groupExpression>
+		</group>
+	</subDataset>
+	<subDataset name="rentTotal" uuid="f44d0626-743e-44ac-950d-a4865adf9f6e">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT SUM(a.monthly_rent) as "Total Rent Collected"
+FROM unit_leasing_log a, payment_log b
+WHERE MONTH(b.payment_date) = MONTH(CURDATE()) AND YEAR(b.payment_date) = YEAR(CURDATE())]]>
+		</queryString>
+		<field name="Total Rent Collected" class="java.math.BigDecimal">
+			<property name="com.jaspersoft.studio.field.label" value="Total Rent Collected"/>
+		</field>
+	</subDataset>
+	<subDataset name="feesTotal" uuid="8488d6a3-124b-4435-943a-7f4888fc02d5">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT SUM(b.app_fee) + SUM(b.security_deposit) AS "Total"
+FROM unit_lease b, unit a, application c
+WHERE b.id = a.unit_lease_id AND a.id = c.unit_id AND MONTH(c.app_submit_date) = MONTH(CURDATE()) AND YEAR(c.app_submit_date) = YEAR(CURDATE())]]>
+		</queryString>
+		<field name="Total" class="java.math.BigDecimal">
+			<property name="com.jaspersoft.studio.field.label" value="Total"/>
+		</field>
+	</subDataset>
+	<subDataset name="feesSubtotal" uuid="8e493f1d-2785-450b-b8ef-f4142c48ebf7">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT a.id, SUM(b.app_fee) as "App Fees Collected", SUM(b.security_deposit) AS "Security Deposit Collected", SUM(b.app_fee) + SUM(b.security_deposit) AS "Total"
+FROM unit_lease b, unit a, application c
+WHERE b.id = a.unit_lease_id AND a.id = c.unit_id AND MONTH(c.app_submit_date) = MONTH(CURDATE()) AND YEAR(c.app_submit_date) = YEAR(CURDATE())
+GROUP BY a.id, b.app_fee, b.security_deposit]]>
+		</queryString>
+		<field name="id" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="id"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="unit"/>
+		</field>
+		<field name="App Fees Collected" class="java.math.BigDecimal">
+			<property name="com.jaspersoft.studio.field.label" value="App Fees Collected"/>
+		</field>
+		<field name="Security Deposit Collected" class="java.math.BigDecimal">
+			<property name="com.jaspersoft.studio.field.label" value="Security Deposit Collected"/>
+		</field>
+		<field name="Total" class="java.math.BigDecimal">
+			<property name="com.jaspersoft.studio.field.label" value="Total"/>
+		</field>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT c.unit_id, a.problem_descrip, b.service_category, a.log_date, a.closure_date
+FROM service_request a, service_category b, unit_leasing_log c
+WHERE c.id=a.unit_leasing_log_id AND b.id = a.service_category_id AND MONTH(a.closure_date) = MONTH(CURDATE()) AND YEAR(a.closure_date) = YEAR(CURDATE())
+ORDER BY a.closure_date, b.service_category DESC]]>
+	</queryString>
+	<field name="unit_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="unit_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+	</field>
+	<field name="problem_descrip" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="problem_descrip"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="service_request"/>
+	</field>
+	<field name="service_category" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="service_category"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="service_category"/>
+	</field>
+	<field name="log_date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="log_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="service_request"/>
+	</field>
+	<field name="closure_date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="closure_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="service_request"/>
+	</field>
+	<title>
+		<band height="71">
+			<staticText>
+				<reportElement x="480" y="0" width="70" height="27" uuid="7bbf9c0e-6e66-4b63-8694-333773283f08">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="19" isBold="true"/>
+				</textElement>
+				<text><![CDATA[L U X Y]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="0" width="180" height="30" uuid="c11e7066-a342-4032-8355-6365b397663b"/>
+				<textElement>
+					<font size="24"/>
+				</textElement>
+				<text><![CDATA[Monthly Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="440" y="27" width="121" height="15" uuid="32563396-b063-4e9a-96eb-5efd3b14faeb">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Property Management]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="505" y="42" width="50" height="15" uuid="aba578dd-70c2-48c6-b045-6e467891e989">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Software]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="20" y="37" width="150" height="18" uuid="5429c242-4f7a-489b-9ba9-5ee3562ed42b"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[DateTime.now().toString("MMMM YYYY")]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="61">
+			<line>
+				<reportElement x="2" y="-3" width="551" height="1" forecolor="#336600" uuid="2d41651c-9775-46e1-8db8-6e749ecd9d4d">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="170" y="10" width="223" height="25" uuid="a0feb958-376e-4e52-a992-a24cdd3148c5"/>
+				<textElement textAlignment="Center">
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Maintenance Completed]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="43" width="50" height="15" uuid="47c817be-017f-455b-9b1e-ebef6d2beb79">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2b8b137a-5bba-463d-89f1-74540212a21c"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isBold="false" isItalic="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Unit ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="43" width="50" height="15" uuid="daac0e03-fbdd-4da6-b470-aafd0c2fcaeb">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="46c78328-ded0-4472-b99d-c39d4e1f3ded"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Problem]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="240" y="43" width="100" height="15" uuid="a67f68fb-09eb-40b4-96e4-933b7d51ff70">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Service Category]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="460" y="43" width="80" height="15" uuid="d3441fbd-04b2-49f2-9690-514b2a8c499d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Closure Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="366" y="43" width="60" height="15" uuid="16983e68-da2e-4c31-9178-f1d4f696e9b9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Log Date]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18">
+			<textField>
+				<reportElement x="10" y="3" width="65" height="15" uuid="ae95f4d2-8935-47ac-8d2f-a572e2d624bd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5973a287-35eb-433f-8800-d3c590e294c7"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{unit_id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="3" width="100" height="15" uuid="94b08dab-d463-47c0-839a-9cae5fc56325">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="dc8d074e-c2f0-4c3a-abe7-bf00cdc263b1"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{problem_descrip}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="3" width="100" height="15" uuid="26bdd2dd-02ad-41c4-8afe-d6df8d852275">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aa683750-573b-40f0-ade5-4b476df1b5bc"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{service_category}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yy">
+				<reportElement x="366" y="3" width="80" height="15" uuid="61e545a9-8d85-4de7-ae02-5a3952b1b67f">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f470e0ab-de9b-4ce7-9b28-1d2f79d79c72"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{log_date}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yy">
+				<reportElement x="460" y="3" width="95" height="15" uuid="1753caa9-6b4f-4d90-b737-4e9aa5308240"/>
+				<textFieldExpression><![CDATA[$F{closure_date}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="336" splitType="Immediate">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="310" width="554" height="20" backcolor="#E6E8E9" uuid="3fb99f67-e49e-4273-aee6-e4dfffcabe58"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[END OF REPORT]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="10" y="30" width="190" height="18" uuid="91710c1c-029e-4397-b498-905beca6a2b6"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="maintSubtotal" uuid="444e2caf-32e9-41da-8e10-864eb2ee13d9">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="18" width="190">
+						<textField>
+							<reportElement x="0" y="0" width="100" height="15" uuid="d9e943b2-5c2d-4c62-b1d5-26fa0bb25e92"/>
+							<textFieldExpression><![CDATA[$F{service_category}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="128" y="0" width="60" height="15" uuid="057b7734-23aa-47d4-a1e3-c8009a86cd9c"/>
+							<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement x="10" y="10" width="46" height="20" uuid="9494cf34-2980-474f-9ebe-bb6dc9d7a508">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b9014135-c1db-4c8d-8a94-23994d380e52"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="136" y="10" width="60" height="20" uuid="0b6a0b88-aead-4311-a34f-ffb8b71d0dda">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Subtotal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="240" y="30" width="140" height="25" uuid="cfc1125f-a011-4c0d-9a21-6c56100f1045"/>
+				<textElement>
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Fees Summary]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="136" y="100" width="69" height="15" uuid="52389d70-ee5a-45f1-b994-07479f81cb8d"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="maintTotal" uuid="95682136-60a8-417f-871f-55df371d5ed5">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="15" width="69">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="15" uuid="f24dc5fb-719f-413a-b782-77c6c537d7a0"/>
+							<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement x="136" y="80" width="45" height="20" uuid="2a2cc818-06e0-425d-9b45-df33bb598e24">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="120" width="140" height="25" uuid="0f5b20b9-89b1-40e1-bcd0-da94198ca6c5"/>
+				<textElement>
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Rent Summary]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="13" y="170" width="190" height="18" uuid="7e9260a9-243e-494f-9bd0-62e4791b62aa"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="rentSubtotal" uuid="8abc576f-a3db-4a8e-9379-8607c3634cbc">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="18" width="190">
+						<textField>
+							<reportElement x="0" y="0" width="100" height="15" uuid="d4181559-52f0-4d0c-bb3a-2324d9161c30"/>
+							<textFieldExpression><![CDATA[$F{payment_status}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="110" y="0" width="60" height="15" uuid="846a085c-097d-4c69-bed9-7490741d9f78"/>
+							<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement x="13" y="150" width="46" height="20" uuid="2f8934c1-f7e2-4da8-b8f2-acc2c625e90d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b9014135-c1db-4c8d-8a94-23994d380e52"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="150" width="60" height="20" uuid="e2fc4867-5f64-40f6-b3b1-4b5e798c02cf">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Subtotal]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="13" y="290" width="80" height="15" uuid="42cf0872-62fe-423f-abb6-460614535e2e"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="rentTotal" uuid="0dd68abb-e265-4509-a83d-9d9f99cf3ae6">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="15" width="80">
+						<textField>
+							<reportElement x="0" y="0" width="70" height="15" uuid="48161784-a633-49bb-a434-feef2bfbf812"/>
+							<textFieldExpression><![CDATA[$F{Total Rent Collected}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement x="10" y="270" width="100" height="20" uuid="dd3bd0a2-c086-48b2-a9a4-695b6f8d095e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Rent Collected]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="239" y="55" width="46" height="20" uuid="630ac7d0-00c5-487d-85c0-328b4b7c5bc9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b9014135-c1db-4c8d-8a94-23994d380e52"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Unit ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="486" y="55" width="60" height="20" uuid="f5ef68eb-5728-4628-bdd8-7225e678344b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Subtotal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="122" y="270" width="90" height="20" uuid="9c2f90a2-1626-4d4e-8ffa-da0193c64f4b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Fees Collected]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="240" width="216" height="25" uuid="d610bcc4-d6b8-4d79-a01e-129c350519d4"/>
+				<textElement>
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Total Monthly Revenue]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="296" y="55" width="60" height="20" uuid="e27db3ac-804a-43f7-ae2a-93e4b38ddbb8">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[App Fee]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="372" y="55" width="104" height="20" uuid="0bec87c8-a5b5-454a-a50f-9392710810d5">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Security Deposit]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="242" y="80" width="310" height="15" uuid="8a3c8293-4aba-498e-8119-7854be9fbb41"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="feesSubtotal" uuid="447087c0-9238-4460-b3dc-d3027a8a01e7">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="15" width="310">
+						<textField>
+							<reportElement x="0" y="0" width="50" height="15" uuid="430c2713-7a41-4d87-b786-14177343853c"/>
+							<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="50" y="0" width="70" height="15" uuid="c8d5fc8a-1203-4457-9b82-83d00b3a7950"/>
+							<textFieldExpression><![CDATA[$F{App Fees Collected}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="130" y="0" width="100" height="15" uuid="65de6a92-5bbc-4605-a717-5d339afc9d5b"/>
+							<textFieldExpression><![CDATA[$F{Security Deposit Collected}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="240" y="0" width="60" height="15" uuid="a27c10e9-8c6f-4d03-a0ad-c4f390296c4d"/>
+							<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<componentElement>
+				<reportElement x="122" y="290" width="80" height="15" uuid="b6611930-e239-4185-b65e-1d490f783adf"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="feesTotal" uuid="ef60677b-9dca-441e-983d-e290dc1b6093">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="15" width="80">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="15" uuid="746e32db-655c-4313-ac87-c528afe7ff65"/>
+							<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+		</band>
+	</summary>
+</jasperReport>

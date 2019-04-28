@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="dailyReport" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4eedbb89-b4f6-4469-9ab6-f642a1688cf7">
+	<property name="template.engine" value="tabular_template"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#EEEFF0"/>
+		</conditionalStyle>
+	</style>
+	<style name="Table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+			<topPen lineWidth="1.0" lineColor="#000000"/>
+			<leftPen lineWidth="1.0" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineColor="#000000"/>
+			<rightPen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="maintScheduled" uuid="fa70ddbb-ed9d-4ee5-ad2a-85447486eb93">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT c.unit_id, a.problem_descrip, b.service_category
+FROM service_request a, service_category b, unit_leasing_log c
+WHERE c.id = a.unit_leasing_log_id AND b.id = a.service_category_id AND DATE(a.log_date) = CURDATE() AND a.service_category_id = 2
+ORDER BY c.unit_id]]>
+		</queryString>
+		<field name="unit_id" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="unit_id"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+		</field>
+		<field name="problem_descrip" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="problem_descrip"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="service_request"/>
+		</field>
+		<field name="service_category" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="service_category"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="service_category"/>
+		</field>
+	</subDataset>
+	<subDataset name="maintRequested" uuid="ffde90fd-6576-4fe4-a404-68059d70fe85">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT c.unit_id, a.problem_descrip, b.service_category
+FROM service_request a, service_category b, unit_leasing_log c
+WHERE c.id = a.unit_leasing_log_id AND b.id = a.service_category_id AND DATE(a.log_date) = CURDATE() AND a.service_category_id = 1
+ORDER BY c.unit_id]]>
+		</queryString>
+		<field name="unit_id" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="unit_id"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+		</field>
+		<field name="problem_descrip" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="problem_descrip"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="service_request"/>
+		</field>
+		<field name="service_category" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="service_category"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="service_category"/>
+		</field>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT a.unit_leasing_log_id, a.payment_date, a.payment_status, b.monthly_rent, CONCAT(d.first_name, ' ', d.last_name) AS "Renter Name"
+FROM payment_log a, unit_leasing_log b, application c, renter d
+WHERE d.id = c.renter_id AND c.id = b.app_id AND b.id=a.unit_leasing_log_id
+AND a.payment_date = CURDATE()
+ORDER BY a.payment_date, a.payment_status DESC, b.monthly_rent]]>
+	</queryString>
+	<field name="unit_leasing_log_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="unit_leasing_log_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payment_log"/>
+	</field>
+	<field name="payment_date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="payment_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payment_log"/>
+	</field>
+	<field name="payment_status" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="payment_status"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payment_log"/>
+	</field>
+	<field name="monthly_rent" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="monthly_rent"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="unit_leasing_log"/>
+	</field>
+	<field name="Renter Name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="Renter Name"/>
+	</field>
+	<title>
+		<band height="69" splitType="Stretch">
+			<textField pattern="EEEE MMM dd, yyyy">
+				<reportElement x="10" y="40" width="155" height="15" uuid="bb10dbe1-0a4f-4722-9953-c163b63cf979"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="480" y="2" width="70" height="27" uuid="e622555d-198b-4ccd-a4a1-c59c53304058">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="19" isBold="true"/>
+				</textElement>
+				<text><![CDATA[L U X Y]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="8" y="0" width="150" height="30" uuid="bb2c6fb0-6789-435b-b871-3882c0ec25a2"/>
+				<textElement>
+					<font size="24"/>
+				</textElement>
+				<text><![CDATA[Daily Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="440" y="28" width="120" height="15" uuid="ec79840d-2bab-43fa-bb29-e6f02d928d5a">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Property Management]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="505" y="43" width="50" height="15" uuid="47f16f8b-67f0-4242-96aa-bdcd2be0262c">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Software]]></text>
+			</staticText>
+			<line>
+				<reportElement x="2" y="68" width="551" height="1" forecolor="#336600" uuid="806ce5df-1219-4876-ae0c-ca7405b1f246">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="63" splitType="Prevent">
+			<staticText>
+				<reportElement x="170" y="10" width="213" height="25" uuid="eb0b60d0-c072-4e67-b6dc-d190f0886e8d"/>
+				<textElement textAlignment="Center">
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Rent Payments Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="50" y="43" width="50" height="15" uuid="8707c6b9-f342-4019-8362-a5183cc93894">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2b8b137a-5bba-463d-89f1-74540212a21c"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isBold="false" isItalic="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Lease ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="170" y="43" width="90" height="15" uuid="bbd0d790-539a-4607-bf48-31f22c6d4776">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="46c78328-ded0-4472-b99d-c39d4e1f3ded"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Payment Status]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="43" width="80" height="15" uuid="fad3663a-df41-4ca1-a40d-6813e150f959">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Monthly Rent]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="43" width="80" height="15" uuid="f0fdff12-bb51-4d20-b940-5f19942072b9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Renter Name]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Immediate">
+			<textField>
+				<reportElement x="50" y="1" width="120" height="15" uuid="f3c9c171-5007-46ca-9553-9d02c3d8c8a2">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2b8b137a-5bba-463d-89f1-74540212a21c"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{unit_leasing_log_id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="170" y="1" width="100" height="15" uuid="d92e36cd-386f-4409-8720-eca7a8cc6e40">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="46c78328-ded0-4472-b99d-c39d4e1f3ded"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{payment_status}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="290" y="1" width="100" height="15" uuid="b9b70ced-1d74-4616-9d7b-4be82e1ef39a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6434c24e-1d54-4279-bc1a-d8e0b9f197c8"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{monthly_rent}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="100" height="15" uuid="f136ab5a-965a-45db-b17b-ddf000af95b4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="ef48c410-a059-4fcf-a031-0026879b8835"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{Renter Name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="140" splitType="Prevent">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="120" width="554" height="20" backcolor="#E6E8E9" uuid="36aa233d-4305-48e6-974a-1bbf89bb3c8f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[END OF REPORT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="25" y="20" width="210" height="25" uuid="cd7506e2-396d-4ab0-bad1-8ee7f880e238"/>
+				<textElement>
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Maintenance Scheduled]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="30" y="67" width="200" height="15" uuid="2f9b4bac-2ccd-4b93-ae20-141c513175e1"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="maintScheduled" uuid="7fc7ed45-62a9-48a0-92a5-e71a48e9bb67">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="15" width="200">
+						<textField>
+							<reportElement x="90" y="0" width="100" height="15" uuid="c77ee230-77e8-4639-9386-bd5acfe52157"/>
+							<textFieldExpression><![CDATA[$F{problem_descrip}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="0" width="100" height="15" uuid="46cc69c2-b35b-47f7-8ac7-1b6713909901"/>
+							<textFieldExpression><![CDATA[$F{unit_id}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement x="30" y="50" width="50" height="20" uuid="998b433b-b4e9-4474-a202-52312abe2093">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b9014135-c1db-4c8d-8a94-23994d380e52"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Unit ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="50" width="70" height="20" uuid="9b6f49a8-4ecd-4905-a126-209f0ac2a565">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Problem]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="321" y="67" width="229" height="15" uuid="25a034ab-7866-4675-a46d-75b3685c4216"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="maintRequested" uuid="fcf36b35-633b-4ea0-adf3-7caed962e0e8">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="15" width="229">
+						<textField>
+							<reportElement x="70" y="0" width="100" height="15" uuid="1866b336-d6a5-448a-9893-079281a7aed0"/>
+							<textFieldExpression><![CDATA[$F{problem_descrip}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="0" width="60" height="15" uuid="eece3217-39d3-4a3f-b291-6f3952424520"/>
+							<textFieldExpression><![CDATA[$F{unit_id}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement x="321" y="50" width="50" height="20" uuid="cd6fd0aa-d9a6-41e5-80ea-70b26db68e57">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b9014135-c1db-4c8d-8a94-23994d380e52"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Unit ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="50" width="60" height="21" uuid="dfe9e60a-c5d0-4c36-a1cd-b766887b4cc7">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="90a3b4f1-c065-4a25-bcc5-4764a8a708cf"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Problem]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="307" y="20" width="198" height="25" uuid="8037b0f6-a619-44f3-8f01-a1f482275b24"/>
+				<textElement>
+					<font size="18" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Maintenance Requests]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>
